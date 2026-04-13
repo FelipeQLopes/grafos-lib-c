@@ -2,8 +2,8 @@ all: estruturas grafos main
 	mkdir -p build
 	gcc build/*.o -o build/main
 
-run: all
-	./main
+run:
+	./build/main
 
 limpar:
 	rm -f build/*
