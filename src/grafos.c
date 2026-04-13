@@ -6,7 +6,6 @@ Grafo *criarGrafo(char nomeGrafo[], int qtdVertice, bool direcionado){
     strcpy(g->nome, nomeGrafo);
     int i;
     g->qtdArestas = 0;
-    g->qtdComponentes = 0;
     g->qtdVertices = 0;
     g->isCiclico = false;           //Acíclico
     g->isConexo = false;            //Desconexo
@@ -54,6 +53,20 @@ Grafo *criarGrafoLinha(Grafo *g){
         }
     }
     return gl;
+}
+
+Grafo *clonarGrafo(Grafo *g, char *nome, bool direcionado){
+    Grafo *g2 = criarGrafo(nome, g->qtdVertices, direcionado);
+    g2->ultimoVertice = g->ultimoVertice;
+    for(int i = 0; i < g->qtdVertices; i++){
+        g2->V[i].nome = g->V[i].nome;
+    }
+    for(int i = 0; i < g->qtdArestas; i++){
+        addAresta(g2, g->V[g->E[i].u].nome, g->V[g->E[i].v].nome);
+    }
+
+    return g2;
+
 }
 
 void printGrafo(Grafo *g){
@@ -357,7 +370,7 @@ void isCiclico(Grafo *g){
             }
         }
         g->isCiclico = g1.qtdVertices > 0 ? true : false; 
-    }else if(!(g->qtdArestas == 0)){
+    }else if(g->qtdArestas == 0){
         g->isCiclico = false;
     }else{
         g->isCiclico = true;
@@ -365,12 +378,16 @@ void isCiclico(Grafo *g){
 }
 
 int verificarEuleriano(Grafo *g){
-    int euleriano = 0, impar = 0;
+    int euleriano = 0, par = 0, impar = 0;
 
     if(g->isConexo){
         for(int i = 0; i < g->qtdVertices; i++){
-            if(g->V[i].grauEntrada % 2 != 0 && g->V[i].grauSaida % 2 != 0 && g->V[i].grauEntrada != g->V[i].grauSaida){
+            if((g->V[i].grauEntrada % 2 == 0) && (g->V[i].grauSaida % 2 == 0) && (g->V[i].grauEntrada == g->V[i].grauSaida)){
+                par++;
+            }else if(g->V[i].grauEntrada == g->V[i].grauSaida){
                 impar++;
+            }else{
+                return euleriano;
             }
         }
         if(impar == 2){
@@ -378,7 +395,7 @@ int verificarEuleriano(Grafo *g){
         }else if(impar == 0){
             euleriano = 2;
         }
-    }
+    }   
     return euleriano;
 }
 
@@ -386,4 +403,24 @@ int verificarHamiltoniano(Grafo *g){
     Grafo *gl = criarGrafoLinha(g);
     int hamiltoniano = verificarEuleriano(gl);
     return hamiltoniano;
+}
+
+void fusaoVertices(Grafo *g, int *vertices){
+    int cont = 0, qtdArestas = g->qtdArestas, cArestas = 0;
+    int arestas[g->qtdArestas];
+    addVertice(g);
+    char v = g->ultimoVertice;
+    while(vertices[cont] != NULL){
+        for(int i = 0; i < qtdArestas; i++){
+            if(g->E[i].u != g->E[i].v){
+                if(vertices[cont] == g->E[i].u){
+                    addAresta(g, v, g->E[i].v);
+                    cArestas++;
+                    delArestaUV(g, g->V[g->E[i].u].nome, g->V[g->E[i].v].nome, false);
+
+                }
+            }
+        }
+        cont++;
+    }
 }
