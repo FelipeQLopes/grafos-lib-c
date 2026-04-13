@@ -405,22 +405,33 @@ int verificarHamiltoniano(Grafo *g){
     return hamiltoniano;
 }
 
-void fusaoVertices(Grafo *g, int *vertices){
-    int cont = 0, qtdArestas = g->qtdArestas, cArestas = 0;
-    int arestas[g->qtdArestas];
-    addVertice(g);
-    char v = g->ultimoVertice;
-    while(vertices[cont] != NULL){
-        for(int i = 0; i < qtdArestas; i++){
-            if(g->E[i].u != g->E[i].v){
-                if(vertices[cont] == g->E[i].u){
-                    addAresta(g, v, g->E[i].v);
-                    cArestas++;
-                    delArestaUV(g, g->V[g->E[i].u].nome, g->V[g->E[i].v].nome, false);
 
+void fusaoVertices(Grafo *g, char *vert, int tamanho){
+    int cont = 0, qtdArestas = g->qtdArestas, cArestas = 0;
+    int vertices[tamanho];
+    int arestas[g->qtdArestas];
+    for(int i = 0; i < tamanho; i++){
+        vertices[i] = acharVertice(g, vert[i]);
+    }
+    addVertice(g);
+    char v = (char)g->ultimoVertice - 1;
+    while(cont < tamanho){
+        for(int i = 0; i < qtdArestas-cArestas; i++){
+            if(g->E[i].u != g->E[i].v){
+                if(g->V[g->E[i].u].nome == v || g->V[g->E[i].v].nome == v) continue;
+                if(vertices[cont] == g->E[i].u){
+                    addAresta(g, v, g->V[g->E[i].v].nome);
+                    delArestaUV(g, g->V[g->E[i].u].nome, g->V[g->E[i].v].nome, false);
+                    arestas[cArestas++] = g->qtdArestas;
+                    i--;
+                }else if(vertices[cont] == g->E[i].v){
+                    addAresta(g, g->V[g->E[i].u].nome, v);
+                    delArestaUV(g, g->V[g->E[i].u].nome, g->V[g->E[i].v].nome, false);
+                    arestas[cArestas++] = g->qtdArestas;
+                    i--;
                 }
             }
         }
-        cont++;
+        delVertice(g, vert[cont++]);
     }
 }

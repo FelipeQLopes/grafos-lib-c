@@ -20,10 +20,9 @@ typedef struct Aresta{
 
 typedef struct Grafo {
     char nome[30];
-    Vertice V[30];
-    Aresta E[225];
+    Vertice V[25];
+    Aresta E[300];
     int qtdArestas;
-    int qtdComponentes;
     int qtdVertices;
     bool isCiclico;
     bool isConexo;
@@ -37,6 +36,7 @@ typedef struct Grafo {
 Grafo *criarGrafo(char nomeGrafo[], int qtdVertice, bool direcionado);
 Grafo *criarGrafoTransposto(Grafo *g);
 Grafo *criarGrafoLinha(Grafo *g);
+Grafo *clonarGrafo(Grafo *g, char *nome, bool direcionado);
 void addAresta(Grafo *g, char u, char v);
 void delArestaUV(Grafo *g, char u, char v, bool todos);
 void delArestaNum(Grafo *g, int indice);
@@ -55,3 +55,5 @@ int verificarHamiltoniano(Grafo *g);
 void isConexo(Grafo *g);
 void isSimples(Grafo *g);
 void isCiclico(Grafo *g);
+void fusaoVertices(Grafo *g, char *vert, int tamanho);
+
