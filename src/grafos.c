@@ -405,7 +405,6 @@ int verificarHamiltoniano(Grafo *g){
     return hamiltoniano;
 }
 
-
 void fusaoVertices(Grafo *g, char *vert, int tamanho){
     int cont = 0, qtdArestas = g->qtdArestas, cArestas = 0;
     int vertices[tamanho];
@@ -434,4 +433,42 @@ void fusaoVertices(Grafo *g, char *vert, int tamanho){
         }
         delVertice(g, vert[cont++]);
     }
+}
+
+Fecho *fechoTransitivoD(Grafo *g, char u){
+    limparLW(g);
+    Fecho *fecho = malloc(25 * 4);
+    int i = acharVertice(g, u);
+    fecho_rec(g, i, fecho);
+    return fecho;
+}
+
+Fecho *fechoTransitivoI(Grafo *g, char u){
+    limparLW(g);
+    Fecho *fecho = malloc(25 * 4);
+    int i = acharVertice(g, u);
+    Grafo *gt = criarGrafoTransposto(g);
+    fecho_rec(gt, i, fecho);
+    return fecho;
+}
+
+void fecho_rec(Grafo *g, int i, Fecho *f){
+    int cont = 0;
+    f->fecho[f->qtd++] = i;
+    strcpy(g->V[i].label ,"Em andamento");
+    for(int j = 0; j < g->qtdArestas; j++){
+        if(cont > g->V[i].grauSaida) break;
+        if(g->E[j].u == i){
+            cont++;
+            if(strcmp(g->V[g->E[j].v].label, "") == 0){
+                fecho_rec(g, g->E[j].v, f);
+            }
+        }else if(!g->isDirecionado && g->E[j].v == i){
+            cont++;
+            if(strcmp(g->V[g->E[j].u].label, "") == 0){
+                fecho_rec(g, g->E[j].u, f);
+            }
+        }
+    }
+    strcpy(g->V[i].label, "Visitado");
 }
