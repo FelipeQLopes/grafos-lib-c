@@ -278,20 +278,20 @@ void buscaLargura(Grafo *g){
     for(int i = 0; i < g->qtdVertices; i++){ //Loop que vai pegar os vertices para "iniciar" a busca
         if(strcmp(g->V[i].label, "") == 0){
             enqueue(fila, i);
-            printf("%c %s ", g->V[fila->elementos[*x]].nome, g->isDirecionado ? "->" : "--");
+            printf("%c %s ", g->V[fila->elementos[*x].x].nome, g->isDirecionado ? "->" : "--");
             do{
                 int cont = 0;
-                if(strcmp(g->V[fila->elementos[*x]].label, "") == 0){
-                    strcpy(g->V[fila->elementos[*x]].label, "Em Andamento");
+                if(strcmp(g->V[fila->elementos[*x].x].label, "") == 0){
+                    strcpy(g->V[fila->elementos[*x].x].label, "Em Andamento");
                     for(int j = 0; j < g->qtdArestas; j++){ //Loop para ver as arestas ligadas a V[i] e achar os V ligados a V[i]
-                        if(cont > g->V[fila->elementos[*x]].grauSaida) break;
-                        if(g->E[j].u == fila->elementos[*x]){
+                        if(cont > g->V[fila->elementos[*x].x].grauSaida) break;
+                        if(g->E[j].u == fila->elementos[*x].x){
                             if(strcmp(g->V[g->E[j].v].label, "") == 0){
                                 enqueue(fila, g->E[j].v);
                                 printf("%c %s ", g->V[g->E[j].v].nome, g->isDirecionado ? "->" : "--");
                             }
                             cont++;
-                        }else if(!g->isDirecionado && g->E[j].v == fila->elementos[*x]){
+                        }else if(!g->isDirecionado && g->E[j].v == fila->elementos[*x].x){
                             if(strcmp(g->V[g->E[j].u].label, "") == 0){
                                 enqueue(fila, g->E[j].u);
                                 printf("%c %s ", g->V[g->E[j].u].nome, g->isDirecionado ? "->" : "--");
@@ -300,8 +300,8 @@ void buscaLargura(Grafo *g){
                         }
                     }
                 }
-                strcpy(g->V[fila->elementos[*x]].label,"Visitado");
-                printf("%c' | ", g->V[dequeue(fila)].nome);
+                strcpy(g->V[fila->elementos[*x].x].label,"Visitado");
+                printf("%c' | ", g->V[dequeue(fila).x].nome);
             }while(fila->comeco != fila->fim);
         }
     }

@@ -39,6 +39,11 @@ typedef struct Fecho{
     int qtd;
 }Fecho;
 
+typedef struct Ordem{
+    int caminho[30][2];
+    int qtd;
+}Ordem;
+
 Grafo *criarGrafo(char nomeGrafo[], int qtdVertice, bool direcionado);  //Função de Criar o Grafo Direcionado ou Não direcionado
 Grafo *criarGrafoTransposto(Grafo *g);                                  //Cria um Grafo Transposto de G
 Grafo *criarGrafoLinha(Grafo *g);                                       //Cria um Grafo Linha de G
@@ -68,5 +73,6 @@ void fecho_rec(Grafo *g, int i, Fecho *fecho);                          //Funç�
 int contarSCC(Grafo *g);                                                //Contar componentes fortemente conexos
 void contarSCC_rec(Grafo *g, int i, char caminho[], int qtdCaminho);    //Função Recursiva de busca por profundidade para fundir os ciclos do grafo
 //int contarCiclos(Grafo *g);                                           //Contar a quantidade de ciclos do Grafo
-
-
+Ordem dijkstra(Grafo *g, char u);                                       //Algoritmo dijkstra acha o menor caminho em um grafo ponderado de u para qualquer vertice, se todos os pesos forem não negativos
+Ordem bellmanFord(Grafo *g, char u);                                    //Algoritmo que acha o menor caminho que funciona para Grafos ponderados com valores positivos ou negativos
+Grafo* prim(Grafo *g, char u);                                          //Retorna o subgrafo com a menor soma de pesos totais
