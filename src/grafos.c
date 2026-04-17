@@ -98,7 +98,6 @@ void addVertice(Grafo *g){
 
 void delVertice(Grafo *g, char u){
     int indice = acharVertice(g, u);
-    printf("\nDel : %c %d", u, indice);
     if(indice != -1){
         if(g->V[indice].grauEntrada > 0 || g->V[indice].grauSaida > 0){
             for(int i = 0; i < g->qtdArestas; i++ ){
@@ -109,14 +108,11 @@ void delVertice(Grafo *g, char u){
             }
         }
         for(int i = 0; i < g->qtdArestas; i++ ){
-            printf("\n+ %c %d\t%c %d", g->V[g->E[i].u].nome, g->E[i].u, g->V[g->E[i].v].nome, g->E[i].v);
             g->E[i].u -= g->E[i].u >= indice ? 1 : 0;
             g->E[i].v -= g->E[i].v >= indice ? 1 : 0;
-            printf("\n- %c %d\t%c %d", g->V[g->E[i].u].nome, g->E[i].u, g->V[g->E[i].v].nome, g->E[i].v);
         }
         for(int i = indice; i < g->qtdVertices-1; i++){
             g->V[i] = g->V[i + 1];
-            printf("\nResultado %c %d", g->V[i].nome, i);
         }
         g->qtdVertices--;   
     }
@@ -143,7 +139,6 @@ void addAresta(Grafo *g, char u, char v){
 }
 
 void delArestaUV(Grafo *g, char u, char v, bool todos){
-    printf("\nAresta deletada: %c %d\t%c %d", u, acharVertice(g, u),  v, acharVertice(g, v));
     if(g->isDirecionado){
         for(int i = 0; i < g->qtdArestas; i++){
             if(g->V[g->E[i].u].nome == u && g->V[g->E[i].v].nome == v){
@@ -421,13 +416,11 @@ void fusaoVertices(Grafo *g, char *vert, int tamanho){
             if(g->E[i].u != g->E[i].v){
                 if(g->V[g->E[i].u].nome == v || g->V[g->E[i].v].nome == v) continue;
                 if(acharVertice(g, vert[cont]) == g->E[i].u){
-                    printf("\n1");
                     addAresta(g, v, g->V[g->E[i].v].nome);
                     delArestaUV(g, g->V[g->E[i].u].nome, g->V[g->E[i].v].nome, false);
                     arestas[cArestas++] = g->qtdArestas;
                     i--;
                 }else if(acharVertice(g, vert[cont]) == g->E[i].v){
-                    printf("\n2");
                     addAresta(g, g->V[g->E[i].u].nome, v);
                     delArestaUV(g, g->V[g->E[i].u].nome, g->V[g->E[i].v].nome, false);
                     arestas[cArestas++] = g->qtdArestas;
@@ -484,13 +477,10 @@ int contarSCC(Grafo *g){
 
     for(int i = 0; i < g->qtdVertices; i++){
         int x = acharVertice(gc, g->V[i].nome);
-        printf("\nChamou %c achou %d label %s", g->V[i].nome, x, gc->V[x].label);
         if(x != -1 && strcmp(gc->V[x].label, "") == 0){
             contarSCC_rec(gc, x, caminho, 0);
         }
     }
-    printf("\n");
-    printGrafo(gc);
 
     return gc->qtdVertices;
 }
@@ -499,23 +489,19 @@ void contarSCC_rec(Grafo *g, int i, char caminho[], int qtdCaminho){
     int cont = 0;
     int k, l;
     char vFusao[30];
-    printf("%c ", g->V[i].nome);
     for(k = 0; k <= qtdCaminho; k++){
         if(acharVertice(g, caminho[k]) == i){
             break;
         }
     }
     if(k <= qtdCaminho){
-        printf("\n Fusao : ");
         for(l = k; l < qtdCaminho; l++){
             vFusao[l-k] = caminho[l];
             cont++;
-            printf("%c ", vFusao[l-k]);
         }
         for(int i = 0; i < cont; i++){
             qtdCaminho--;
         }
-        printf("\n");
         fusaoVertices(g, vFusao, l-k+1);
         i = g->ultimoVertice - 1;
     }

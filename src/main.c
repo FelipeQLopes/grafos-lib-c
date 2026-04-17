@@ -17,7 +17,4 @@ int main(){
 
     int scc = contarSCC(g);
     printf("\n%d SCCs", scc);
-
-    fusaoVertices(g, "ABCE", 4);
-    printGrafo(g);
 }
