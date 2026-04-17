@@ -1,4 +1,3 @@
-#include "../include/estruturas.h"
 #include "../include/grafos.h"
 
 Grafo *criarGrafo(char nomeGrafo[], int qtdVertice, bool direcionado){
@@ -99,19 +98,25 @@ void addVertice(Grafo *g){
 
 void delVertice(Grafo *g, char u){
     int indice = acharVertice(g, u);
+    printf("\nDel : %c %d", u, indice);
     if(indice != -1){
-        for(int i = 0; i < g->qtdArestas; i++ ){
-            if(g->E[i].u == indice || g->E[i].v == indice){
-                delArestaUV(g, g->V[g->E[i].u].nome, g->V[g->E[i].v].nome, true);
-                i--;
+        if(g->V[indice].grauEntrada > 0 || g->V[indice].grauSaida > 0){
+            for(int i = 0; i < g->qtdArestas; i++ ){
+                if(g->E[i].u == indice || g->E[i].v == indice){
+                    delArestaUV(g, g->V[g->E[i].u].nome, g->V[g->E[i].v].nome, false);
+                    i--;
+                }
             }
         }
         for(int i = 0; i < g->qtdArestas; i++ ){
-            g->E[i].u -= g->E[i].u > indice ? 1 : 0;
-            g->E[i].v -= g->E[i].v > indice ? 1 : 0;
+            printf("\n+ %c %d\t%c %d", g->V[g->E[i].u].nome, g->E[i].u, g->V[g->E[i].v].nome, g->E[i].v);
+            g->E[i].u -= g->E[i].u >= indice ? 1 : 0;
+            g->E[i].v -= g->E[i].v >= indice ? 1 : 0;
+            printf("\n- %c %d\t%c %d", g->V[g->E[i].u].nome, g->E[i].u, g->V[g->E[i].v].nome, g->E[i].v);
         }
-        for(int i = indice; i < g->qtdVertices; i++){
+        for(int i = indice; i < g->qtdVertices-1; i++){
             g->V[i] = g->V[i + 1];
+            printf("\nResultado %c %d", g->V[i].nome, i);
         }
         g->qtdVertices--;   
     }
@@ -138,6 +143,7 @@ void addAresta(Grafo *g, char u, char v){
 }
 
 void delArestaUV(Grafo *g, char u, char v, bool todos){
+    printf("\nAresta deletada: %c %d\t%c %d", u, acharVertice(g, u),  v, acharVertice(g, v));
     if(g->isDirecionado){
         for(int i = 0; i < g->qtdArestas; i++){
             if(g->V[g->E[i].u].nome == u && g->V[g->E[i].v].nome == v){
@@ -169,7 +175,7 @@ void delArestaUV(Grafo *g, char u, char v, bool todos){
 
 void delArestaNum(Grafo *g, int indice){
     int i;
-    for(i = indice; i < g->qtdArestas; i++ ){
+    for(i = indice; i < g->qtdArestas - 1; i++ ){
         g->E[i] = g->E[i + 1];
     }
     g->qtdArestas--;
@@ -407,23 +413,21 @@ int verificarHamiltoniano(Grafo *g){
 
 void fusaoVertices(Grafo *g, char *vert, int tamanho){
     int cont = 0, qtdArestas = g->qtdArestas, cArestas = 0;
-    int vertices[tamanho];
     int arestas[g->qtdArestas];
-    for(int i = 0; i < tamanho; i++){
-        vertices[i] = acharVertice(g, vert[i]);
-    }
     addVertice(g);
     char v = (char)g->ultimoVertice - 1;
     while(cont < tamanho){
         for(int i = 0; i < qtdArestas-cArestas; i++){
             if(g->E[i].u != g->E[i].v){
                 if(g->V[g->E[i].u].nome == v || g->V[g->E[i].v].nome == v) continue;
-                if(vertices[cont] == g->E[i].u){
+                if(acharVertice(g, vert[cont]) == g->E[i].u){
+                    printf("\n1");
                     addAresta(g, v, g->V[g->E[i].v].nome);
                     delArestaUV(g, g->V[g->E[i].u].nome, g->V[g->E[i].v].nome, false);
                     arestas[cArestas++] = g->qtdArestas;
                     i--;
-                }else if(vertices[cont] == g->E[i].v){
+                }else if(acharVertice(g, vert[cont]) == g->E[i].v){
+                    printf("\n2");
                     addAresta(g, g->V[g->E[i].u].nome, v);
                     delArestaUV(g, g->V[g->E[i].u].nome, g->V[g->E[i].v].nome, false);
                     arestas[cArestas++] = g->qtdArestas;
@@ -435,16 +439,16 @@ void fusaoVertices(Grafo *g, char *vert, int tamanho){
     }
 }
 
-Fecho *fechoTransitivoD(Grafo *g, char u){
-    limparLW(g);
+Fecho *fechoTransitivoD(Grafo *g, char u, bool limpar){
+    if(limpar) limparLW(g);
     Fecho *fecho = malloc(25 * 4);
     int i = acharVertice(g, u);
     fecho_rec(g, i, fecho);
     return fecho;
 }
 
-Fecho *fechoTransitivoI(Grafo *g, char u){
-    limparLW(g);
+Fecho *fechoTransitivoI(Grafo *g, char u, bool limpar){
+    if(limpar) limparLW(g);
     Fecho *fecho = malloc(25 * 4);
     int i = acharVertice(g, u);
     Grafo *gt = criarGrafoTransposto(g);
@@ -471,4 +475,67 @@ void fecho_rec(Grafo *g, int i, Fecho *f){
         }
     }
     strcpy(g->V[i].label, "Visitado");
+}
+
+int contarSCC(Grafo *g){
+    limparLW(g);
+    Grafo *gc = clonarGrafo(g, "Clone", g->isDirecionado);
+    char caminho[30];
+
+    for(int i = 0; i < g->qtdVertices; i++){
+        int x = acharVertice(gc, g->V[i].nome);
+        printf("\nChamou %c achou %d label %s", g->V[i].nome, x, gc->V[x].label);
+        if(x != -1 && strcmp(gc->V[x].label, "") == 0){
+            contarSCC_rec(gc, x, caminho, 0);
+        }
+    }
+    printf("\n");
+    printGrafo(gc);
+
+    return gc->qtdVertices;
+}
+
+void contarSCC_rec(Grafo *g, int i, char caminho[], int qtdCaminho){
+    int cont = 0;
+    int k, l;
+    char vFusao[30];
+    printf("%c ", g->V[i].nome);
+    for(k = 0; k <= qtdCaminho; k++){
+        if(acharVertice(g, caminho[k]) == i){
+            break;
+        }
+    }
+    if(k <= qtdCaminho){
+        printf("\n Fusao : ");
+        for(l = k; l < qtdCaminho; l++){
+            vFusao[l-k] = caminho[l];
+            cont++;
+            printf("%c ", vFusao[l-k]);
+        }
+        for(int i = 0; i < cont; i++){
+            qtdCaminho--;
+        }
+        printf("\n");
+        fusaoVertices(g, vFusao, l-k+1);
+        i = g->ultimoVertice - 1;
+    }
+    caminho[qtdCaminho++] = g->V[i].nome;
+    cont = 0;
+
+    strcpy(g->V[i].label ,"Em andamento");
+    for(int j = 0; j < g->qtdArestas; j++){
+        if(cont > g->V[i].grauSaida) break;
+        if(g->E[j].u == i){
+            cont++;
+            if(!(strcmp(g->V[g->E[j].v].label, "Visitado") == 0)){
+                contarSCC_rec(g, g->E[j].v, caminho, qtdCaminho);
+            }
+        }else if(!g->isDirecionado && g->E[j].v == i){
+            cont++;
+            if(!(strcmp(g->V[g->E[j].u].label, "Visitado") == 0)){
+                contarSCC_rec(g, g->E[j].u, caminho, qtdCaminho);
+            }
+        }
+    }
+    strcpy(g->V[qtdCaminho].label, "Visitado");
 }

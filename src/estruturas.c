@@ -1,6 +1,5 @@
 #include "../include/estruturas.h"
 
-
 Queue *criarQueue(){
     Queue *fila = malloc(sizeof(Queue));
     fila->comeco = 0;

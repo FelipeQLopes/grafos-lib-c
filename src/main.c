@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include "../include/grafos.h"
 
+
 int main(){
 
     Grafo *g = criarGrafo("Grafo Direcionado", 6, true);
@@ -14,18 +15,9 @@ int main(){
     addAresta(g, 'A', 'F');
     printGrafo(g);
 
-    Fecho *fechoTD = fechoTransitivoD(g, 'A');
-    Fecho *fechoTI = fechoTransitivoI(g, 'A');
+    int scc = contarSCC(g);
+    printf("\n%d SCCs", scc);
 
-    printf("\nFecho Transitivo Direto: ");
-    for(int i = 0; i < fechoTD->qtd; i++){
-        printf("%c ", g->V[fechoTD->fecho[i]].nome);
-    }
-    
-    printf("\nFecho Transitivo Indireto: ");
-    for(int i = 0; i < fechoTI->qtd; i++){
-        printf("%c ", g->V[fechoTI->fecho[i]].nome);
-    }
-
-    return 0;
+    fusaoVertices(g, "ABCE", 4);
+    printGrafo(g);
 }

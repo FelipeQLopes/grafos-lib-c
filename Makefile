@@ -1,5 +1,4 @@
-all: estruturas grafos main
-	mkdir -p build
+all: dir estruturas grafos main
 	gcc build/*.o -o build/main
 
 run:
@@ -16,3 +15,9 @@ grafos:
 
 main:
 	gcc src/main.c -c -o build/main.o
+
+dir:
+	mkdir -p build
+
+compile:
+	gcc src/*.c -o build/main

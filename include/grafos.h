@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include "estruturas.h"
 
 typedef struct Vertice{
     char nome;
@@ -61,10 +62,11 @@ void isConexo(Grafo *g);                                                //Verifi
 void isSimples(Grafo *g);                                               //Verifica se o Grafo é simples ou não
 void isCiclico(Grafo *g);                                               //Verifica se o Grafo é Cíclico ou Acíclico
 void fusaoVertices(Grafo *g, char *vert, int tamanho);                  //Funde Vertices do array recebido
-Fecho *fechoTransitivoD(Grafo *g, char u);                              //Retorna os indices dos vertices que o vertice u atinge (Fecho Transitivo Direto)
-Fecho *fechoTransitivoI(Grafo *g, char u);                              //Retorna os indices dos vertices que atingem u (Fecho Transitivo Inverso)
+Fecho *fechoTransitivoD(Grafo *g, char u, bool limpar);                 //Retorna os indices dos vertices que o vertice u atinge (Fecho Transitivo Direto)
+Fecho *fechoTransitivoI(Grafo *g, char u, bool limpar);                 //Retorna os indices dos vertices que atingem u (Fecho Transitivo Inverso)
 void fecho_rec(Grafo *g, int i, Fecho *fecho);                          //Função Recursiva de busca por profundidade para calcular os fechos
-//int contarSCC(Grafo *g);                                              //Contar componentes fortemente conexos
+int contarSCC(Grafo *g);                                                //Contar componentes fortemente conexos
+void contarSCC_rec(Grafo *g, int i, char caminho[], int qtdCaminho);    //Função Recursiva de busca por profundidade para fundir os ciclos do grafo
 //int contarCiclos(Grafo *g);                                           //Contar a quantidade de ciclos do Grafo
 
 
