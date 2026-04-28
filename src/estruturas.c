@@ -2,51 +2,79 @@
 
 Queue *criarQueue(){
     Queue *fila = malloc(sizeof(Queue));
-    fila->comeco = 0;
-    fila->fim = 0;
+    Elemento e; e.x = -1;
+    fila->comeco = novaCelula(e);
+    fila->fim = fila->comeco;
     fila->tam = 0;
     return fila;
 }
 
-void enqueue(Queue *fila, int x){
-    fila->elementos[fila->fim].x = x;
-    fila->fim = (fila->fim + 1) % (sizeof(fila->elementos)/sizeof(fila->elementos[0]));
-    fila->tam++;
+Celula *novaCelula(Elemento e){
+    Celula *nova = (Celula*)malloc(sizeof(Celula*));
+    nova->e = e;
+    nova->prox = NULL;
+    return nova;
 }
 
-void prioEnqueue(Queue *fila, int x, int peso){
-    Elemento e1, temp;
-    e1.x = x;
-    e1.peso = peso;
-    int i, j, cont, cont1;
-    int tamanho = sizeof(fila->elementos)/sizeof(fila->elementos[0]);
-    
-    fila->tam++;
-    for(i = 0; i < fila->tam; i++){
-        cont = (fila->comeco + i) % tamanho;
-        if(e1.peso < fila->elementos[cont].peso){
-            for(int j = fila->tam; j > i; j--){
-                cont1 = (fila->comeco + j) % tamanho;
-                fila->elementos[cont1] = fila->elementos[cont1 - 1];
+void enqueue(Queue *fila, int x, int peso){
+    Elemento e1;
+    e1.x = x; e1.peso = peso;
+    Celula *temp;
+    temp = fila->comeco;
+    Celula *inserido = novaCelula(e1);
+    for(Celula* c = temp->prox; c != NULL; c = c->prox){
+        if(c->e.x == x){
+            if(c->e.peso <= peso){
+                return;
             }
-            break;
+            temp->prox = c->prox;
+            c->prox = NULL;
+            free(c);
+        }else{
+            temp = c;
         }
     }
-    fila->elementos[cont] = e1;
-    fila->fim = (fila->fim + 1) % tamanho;
-}
+    
+    temp = fila->comeco;
+
+    for(Celula *c = temp->prox; c != NULL; c = c->prox){
+        if(inserido->e.peso < c->e.peso){
+            temp->prox = inserido;
+            inserido->prox = c;
+            break;
+        }
+        temp = c;
+    }
+
+    if(temp->prox == NULL){
+        fila->fim->prox = inserido;
+        fila->fim = fila->fim->prox;
+    }
+    fila->tam++;
+
+}    
 
 Elemento dequeue(Queue *fila){
-    Elemento e1 = fila->elementos[fila->comeco];
-    fila->comeco = (fila->comeco + 1) % (sizeof(fila->elementos)/sizeof(fila->elementos[0]));
+    Celula *temp;
+    Elemento e;
+
+    temp = fila->comeco->prox;
+    fila->comeco->prox = temp->prox;
+    temp->prox = NULL;
+    e = temp->e;
+    free(temp);
     fila->tam--;
-    return e1;
+    if(fila->tam == 0){
+        fila->fim = fila->comeco;
+    }
+
+    return e;
 }
 
 void printQueue(Queue *fila){
     Queue f = *fila;
-    for(int i = 0; i < fila->tam; i++){
-        Elemento e = dequeue(&f);
+    for(Celula *c = fila->comeco->prox; c != NULL; c = c->prox){
+        Elemento e = c->e;
         printf("%d - %d\n", e.x, e.peso);
     }
 }

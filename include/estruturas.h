@@ -6,16 +6,20 @@ typedef struct Elemento{
     int peso;
 }Elemento;
 
+typedef struct Celula{
+    Elemento e;
+    struct Celula *prox;
+}Celula;
+
 typedef struct Queue{
-    Elemento elementos[30];
-    int comeco;
-    int fim;
+    Celula *comeco;
+    Celula *fim;
     int tam;
 }Queue;
 
 Queue *criarQueue();
-void enqueue(Queue *fila, int x);
-void prioEnqueue(Queue *fila, int x, int peso);
+Celula *novaCelula(Elemento e);
+void enqueue(Queue *fila, int x, int peso);
 Elemento dequeue(Queue *fila);
 void printQueue(Queue *fila);
 

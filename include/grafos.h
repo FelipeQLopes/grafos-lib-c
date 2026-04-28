@@ -40,7 +40,7 @@ typedef struct Fecho{
 }Fecho;
 
 typedef struct Ordem{
-    int caminho[30][2];
+    Elemento ordem[30];
     int qtd;
 }Ordem;
 

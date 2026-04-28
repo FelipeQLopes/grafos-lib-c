@@ -125,6 +125,7 @@ void addAresta(Grafo *g, char u, char v){
     int qtd = g->qtdArestas;
     g->E[qtd].u = v1;
     g->E[qtd].v = v2;
+    g->E[qtd].peso = 1;
     if(g->isDirecionado){
         g->V[v1].grauSaida++;
         g->V[v2].grauEntrada++;
@@ -273,36 +274,35 @@ void buscaProfundidade_rec(Grafo *g, int i){
 void buscaLargura(Grafo *g){
     limparLW(g);
     Queue *fila = criarQueue();
-    int *x = &fila->comeco;
-    printf("\nBusca por Largura : ");
+    Celula *x = fila->comeco;
     for(int i = 0; i < g->qtdVertices; i++){ //Loop que vai pegar os vertices para "iniciar" a busca
         if(strcmp(g->V[i].label, "") == 0){
-            enqueue(fila, i);
-            printf("%c %s ", g->V[fila->elementos[*x].x].nome, g->isDirecionado ? "->" : "--");
-            do{
+            enqueue(fila, i, 1);
+            printf("%c %s ", g->V[x->prox->e.x].nome, g->isDirecionado ? "->" : "--");
+            while(fila->tam > 0){
                 int cont = 0;
-                if(strcmp(g->V[fila->elementos[*x].x].label, "") == 0){
-                    strcpy(g->V[fila->elementos[*x].x].label, "Em Andamento");
+                if(strcmp(g->V[x->prox->e.x].label, "") == 0){
+                    strcpy(g->V[x->prox->e.x].label, "Em Andamento");
                     for(int j = 0; j < g->qtdArestas; j++){ //Loop para ver as arestas ligadas a V[i] e achar os V ligados a V[i]
-                        if(cont > g->V[fila->elementos[*x].x].grauSaida) break;
-                        if(g->E[j].u == fila->elementos[*x].x){
+                        if(cont > g->V[x->prox->e.x].grauSaida) break;
+                        if(g->E[j].u == x->prox->e.x){
                             if(strcmp(g->V[g->E[j].v].label, "") == 0){
-                                enqueue(fila, g->E[j].v);
+                                enqueue(fila, g->E[j].v, 1);
                                 printf("%c %s ", g->V[g->E[j].v].nome, g->isDirecionado ? "->" : "--");
                             }
                             cont++;
-                        }else if(!g->isDirecionado && g->E[j].v == fila->elementos[*x].x){
+                        }else if(!g->isDirecionado && g->E[j].v == x->prox->e.x){
                             if(strcmp(g->V[g->E[j].u].label, "") == 0){
-                                enqueue(fila, g->E[j].u);
+                                enqueue(fila, g->E[j].u, 1);
                                 printf("%c %s ", g->V[g->E[j].u].nome, g->isDirecionado ? "->" : "--");
                             }
                             cont++;
                         }
                     }
                 }
-                strcpy(g->V[fila->elementos[*x].x].label,"Visitado");
+                strcpy(g->V[x->prox->e.x].label,"Visitado");
                 printf("%c' | ", g->V[dequeue(fila).x].nome);
-            }while(fila->comeco != fila->fim);
+            }
         }
     }
 }
@@ -525,3 +525,26 @@ void contarSCC_rec(Grafo *g, int i, char caminho[], int qtdCaminho){
     }
     strcpy(g->V[qtdCaminho].label, "Visitado");
 }
+
+/*Ordem dijkstra(Grafo *g, char u){
+    limparLW(g);
+    int vertices[30];
+    Elemento e, selecionado;
+    Queue *prioQueue = criarQueue();
+    e.x = acharVertice(g, u);
+    e.peso = 0;
+    for(int i = 0; i < g->qtdVertices; i++){
+        if(i < e.x){
+            vertices[i] = i;
+        }else if(i > e.x){
+            vertices[i-1] = i;
+        }
+    }
+    prioEnqueue(prioQueue, e.x, e.peso);
+    while(prioQueue->tam > 0){
+        selecionado = dequeue(prioQueue);
+        
+    }
+
+
+}*/
