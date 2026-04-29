@@ -112,9 +112,12 @@ List *criarList(){
     return lista;
 }
 
-void insertComeco(List *lista, Elemento e){
+void insertComeco(List *lista, int x, int peso){
+    Elemento e;
+    e.x = x;
+    e.peso = peso;
     if(lista->tam == 0){
-        insertFim(lista, e);
+        insertFim(lista, x, peso);
     }else{
         ListCell *nova = novaListCell(e);
         nova->prox = lista->comeco->prox;
@@ -125,7 +128,10 @@ void insertComeco(List *lista, Elemento e){
     }
 }
 
-void insertFim(List *lista, Elemento e){
+void insertFim(List *lista, int x, int peso){
+    Elemento e;
+    e.x = x;
+    e.peso = peso;
     ListCell *temp = lista->fim;
     lista->fim = novaListCell(e);
     temp->prox = lista->fim;
@@ -133,11 +139,14 @@ void insertFim(List *lista, Elemento e){
     lista->tam++;
 }
 
-void insert(List *lista, Elemento e, int pos){
+void insert(List *lista, int x, int peso, int pos){
+    Elemento e;
+    e.x = x;
+    e.peso = peso;
     if(pos <= 0){
-        return insertComeco(lista, e);
+        return insertComeco(lista, x, peso);
     }else if(pos > lista->tam-1){
-        return insertFim(lista, e);
+        return insertFim(lista, x, peso);
     }
 
     ListCell *posAnterior, *posPosterior;

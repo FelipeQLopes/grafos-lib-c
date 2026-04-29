@@ -46,9 +46,9 @@ typedef struct List{
 
 ListCell *novaListCell(Elemento e);
 List *criarList();
-void insertComeco(List *lista, Elemento e);
-void insertFim(List *lista, Elemento e);
-void insert(List *lista, Elemento e, int pos);
+void insertComeco(List *lista, int x, int peso);
+void insertFim(List *lista, int x, int peso);
+void insert(List *lista, int x, int peso, int pos);
 Elemento removeComeco(List *lista);
 Elemento removeFim(List *lista);
 Elemento removeCell(List *lista, int pos);
