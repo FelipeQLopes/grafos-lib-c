@@ -10,7 +10,7 @@ Queue *criarQueue(){
 }
 
 Celula *novaCelula(Elemento e){
-    Celula *nova = (Celula*)malloc(sizeof(Celula*));
+    Celula *nova = malloc(sizeof(Celula));
     nova->e = e;
     nova->prox = NULL;
     return nova;
@@ -91,4 +91,160 @@ void push(Stack *pilha, int x){
 
 int pop(Stack *pilha){
     return pilha->elementos[pilha->topo--];
+}
+
+ListCell *novaListCell(Elemento e){
+    ListCell *nova = malloc(sizeof(ListCell));
+    nova->e = e;
+    nova->ant = NULL;
+    nova->prox = NULL;
+    return nova;
+}
+
+List *criarList(){
+    List *lista = malloc(sizeof(List));
+    Elemento e;
+    e.x = -1; e.peso = 1;
+    lista->comeco = novaListCell(e);
+    lista->fim = lista->comeco;
+    lista->tam = 0;
+
+    return lista;
+}
+
+void insertComeco(List *lista, Elemento e){
+    if(lista->tam == 0){
+        insertFim(lista, e);
+    }else{
+        ListCell *nova = novaListCell(e);
+        nova->prox = lista->comeco->prox;
+        lista->comeco->prox = nova;
+        nova->ant = lista->comeco;
+        nova->prox->ant = nova;
+        lista->tam++;
+    }
+}
+
+void insertFim(List *lista, Elemento e){
+    ListCell *temp = lista->fim;
+    lista->fim = novaListCell(e);
+    temp->prox = lista->fim;
+    lista->fim->ant = temp;
+    lista->tam++;
+}
+
+void insert(List *lista, Elemento e, int pos){
+    if(pos <= 0){
+        return insertComeco(lista, e);
+    }else if(pos > lista->tam-1){
+        return insertFim(lista, e);
+    }
+
+    ListCell *posAnterior, *posPosterior;
+    ListCell *nova = novaListCell(e);
+
+    if(pos < (lista->tam / 2)){
+        posAnterior = lista->comeco->prox;
+        for(int i = 1; i < pos; i++){
+            posAnterior = posAnterior->prox;
+        }
+    }else{
+        posAnterior = lista->fim->ant;
+        for(int i = lista->tam-1; i > pos; i--){
+            posAnterior = posAnterior->ant;
+        }
+    }
+    posPosterior = posAnterior->prox;
+    posAnterior->prox = nova;
+    posPosterior->ant = nova;
+    nova->ant = posAnterior;
+    nova->prox = posPosterior;
+    lista->tam++;
+}
+
+Elemento removeComeco(List *lista){
+    ListCell *excluido = lista->comeco->prox;
+    Elemento e = excluido->e;
+    if(lista->tam == 1){
+        lista->fim = lista->comeco;
+        lista->comeco->prox = NULL;
+    }else{
+        ListCell *temp = excluido->prox;
+        temp->ant = lista->comeco;
+        lista->comeco->prox = temp;
+    }
+    
+    excluido->prox = NULL;
+    excluido->ant = NULL;
+    free(excluido);
+
+    lista->tam--;
+
+
+    return e;
+}
+
+Elemento removeFim(List *lista){
+    if(lista->tam == 1) return removeComeco(lista);
+    ListCell *excluido = lista->fim;
+    Elemento e = excluido->e;
+    ListCell *temp = excluido->ant;
+
+    lista->fim = temp;
+    temp->prox = NULL;
+    excluido->prox = NULL;
+    excluido->ant = NULL;
+    free(excluido);
+
+    lista->tam--;
+
+    return e;
+}
+
+Elemento removeCell(List *lista, int pos){
+    if(pos == 0){
+        return removeComeco(lista);
+    }else if(pos == lista->tam-1){
+        return removeFim(lista);
+    }
+
+    ListCell *excluido;
+
+    if(pos < lista->tam/2){
+        excluido = lista->comeco->prox;
+        for(int i = 1; i < pos; i++){
+            excluido = excluido->prox;
+        }
+    }else{
+        excluido = lista->fim->ant;
+        for(int i = lista->tam-2; i > pos; i--){
+            excluido = excluido->ant;
+        }
+    }
+    
+    Elemento e = excluido->e;
+    
+    excluido->ant->prox = excluido->prox;
+    excluido->prox->ant = excluido->ant;
+    excluido->ant = NULL;
+    excluido->prox = NULL;
+    free(excluido);
+    lista->tam--;
+    
+    return e;
+
+}
+
+void printList(List *lista){
+    ListCell *temp = lista->comeco->prox;
+    printf("Print Lista:\n");
+    int i = 0;
+
+    for(i = 0; i < lista->tam; i++){
+        printf("%d ", temp->e.x);
+        temp = temp->prox;
+    }
+
+    if(i == 0) printf("Lista Vazia");
+    printf("\n");
 }

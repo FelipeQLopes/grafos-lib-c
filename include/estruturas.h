@@ -31,3 +31,25 @@ typedef struct Stack{
 Stack *criarStack();
 void push(Stack *pilha, int x);
 int pop(Stack *pilha);
+
+typedef struct ListCell{
+    Elemento e;
+    struct ListCell *prox;
+    struct ListCell *ant;
+}ListCell;
+
+typedef struct List{
+    ListCell *comeco;
+    ListCell *fim;
+    int tam;
+}List;
+
+ListCell *novaListCell(Elemento e);
+List *criarList();
+void insertComeco(List *lista, Elemento e);
+void insertFim(List *lista, Elemento e);
+void insert(List *lista, Elemento e, int pos);
+Elemento removeComeco(List *lista);
+Elemento removeFim(List *lista);
+Elemento removeCell(List *lista, int pos);
+void printList(List *lista);
